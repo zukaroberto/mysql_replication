@@ -1,0 +1,30 @@
+sudo mysql
+
+SET SQL_LOG_BIN=0;
+
+CREATE USER 'repl'@'%' IDENTIFIED BY 'password' REQUIRE SSL;
+
+GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';
+
+FLUSH PRIVILEGES;
+
+SET SQL_LOG_BIN=1;
+
+INSTALL PLUGIN group_replication SONAME 'group_replication.so';
+
+SHOW PLUGINS; 
+
+//the last line must show == group_replication          | ACTIVE   | GROUP REPLICATION  | group_replication.so
+------------------------------------------------------------------------
+
+Server1
+sudo mysql
+
+SET GLOBAL group_replication_bootstrap_group=ON;
+START GROUP_REPLICATION;
+SET GLOBAL group_replication_bootstrap_group=OFF;
+------------------------------------------------------------------------
+Server2&3
+sudo mysql
+
+START GROUP_REPLICATION;
